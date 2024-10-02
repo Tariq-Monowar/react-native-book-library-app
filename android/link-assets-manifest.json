@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/kalpurush.ttf",
+      "sha1": "d9906765a957b6b15b23ee59ab2c1862c736bf54"
+    },
+    {
+      "path": "assets/fonts/Li Alinur Tumatul ANSI V2.ttf",
+      "sha1": "9f54ed6de0d46efcac1d80d353990867a85653e3"
+    },
+    {
+      "path": "assets/fonts/MeriendaBold.ttf",
+      "sha1": "2bd9115fd6058f7fe1c72b6be29fea9d8780e913"
+    }
+  ]
+}
