@@ -4,5 +4,5 @@
 - Bookmark System (note book)
 - Dark & Light Mode
 - SQLite Database
-- user friendly responsive ui/ux
+- user friendly responsive ui/ux 
 ![sss](https://github.com/user-attachments/assets/24887f6b-be0e-47e2-a3a0-7049bef2a2c0)
