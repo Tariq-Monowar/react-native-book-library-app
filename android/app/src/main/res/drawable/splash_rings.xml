@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Two thin rings around the 112dp icon (radius 56dp). 1 unit = 1dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+    <group android:name="ring1" android:pivotX="150" android:pivotY="150">
+        <path
+            android:name="ring1_path"
+            android:strokeColor="@color/splash_accent"
+            android:strokeWidth="1.5"
+            android:strokeAlpha="0"
+            android:pathData="M150,94 a56,56 0 1,1 0,112 a56,56 0 1,1 0,-112" />
+    </group>
+    <group android:name="ring2" android:pivotX="150" android:pivotY="150">
+        <path
+            android:name="ring2_path"
+            android:strokeColor="@color/splash_accent"
+            android:strokeWidth="1.5"
+            android:strokeAlpha="0"
+            android:pathData="M150,94 a56,56 0 1,1 0,112 a56,56 0 1,1 0,-112" />
+    </group>
+</vector>

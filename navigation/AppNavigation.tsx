@@ -1,5 +1,13 @@
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import React, {FC} from 'react';
+import {
+  Dimensions,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import React, {FC, useMemo} from 'react';
+import {HEADER_BOTTOM} from '../utils/layout';
+import {shelfScrollRef} from '../utils/gestures';
 import {NavigationContainer, DrawerActions} from '@react-navigation/native';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -12,27 +20,46 @@ import SheetInput from '../components/SheetInput';
 
 import HomeScreen from '../screens/HomeScreen';
 import HomeDrawer from '../drower/HomeDrower';
-import ChapterList from '../screens/ChapterList';
-import Chapter from '../screens/Chapter';
+// The other screens are loaded the first time they are opened (see the
+// `getComponent` props below), so starting the app runs less code and uses
+// less memory.
 import {UseAppContext} from '../context/AppContext';
-import Bookmarked from '../screens/Bookmarked';
 import {
   DocumentPlusIcon,
   PencilSquareIcon,
   TrashIcon,
 } from 'react-native-heroicons/solid';
-import MarkedDetalse from '../screens/MarkedDetalse';
-import BooksWriter from '../screens/BooksWriter';
-import AboutApp from '../screens/AboutApp';
-import NeedAnApp from '../screens/NeedAnApp';
 import {useThemeColors} from '../context/ThemeContext';
 // Fixed typo
 
+// Navigators must be created once, at module level. Creating them inside a
+// component makes a brand-new navigator on every render, which unmounts and
+// remounts every screen each time the context changes.
+const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
+
+const renderDrawerContent = (props: any) => <HomeDrawer {...props} />;
+
 const DrawerNavigation: FC = () => {
-  const Drawer = createDrawerNavigator();
+  const {appBackground} = useThemeColors();
 
   return (
-    <Drawer.Navigator drawerContent={props => <HomeDrawer {...props} />}>
+    <Drawer.Navigator
+      drawerContent={renderDrawerContent}
+      screenOptions={{
+        overlayColor: 'rgba(8, 12, 22, 0.5)',
+        // Swiping right anywhere on the screen opens the menu. Android's own
+        // back gesture owns the screen edge, so an edge-only swipe is not
+        // reliable there.
+        swipeEdgeWidth: Dimensions.get('window').width,
+        // A swipe that starts on the home screen's bookshelf scrolls the
+        // books instead (see utils/gestures.ts).
+        gestureHandlerProps: {waitFor: shelfScrollRef},
+        drawerStyle: {
+          width: '82%',
+          backgroundColor: appBackground,
+        },
+      }}>
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
@@ -43,8 +70,6 @@ const DrawerNavigation: FC = () => {
 };
 
 const AppNavigation: FC = () => {
-  const Stack = createNativeStackNavigator();
-
   const {
     bookChapter,
     setIsBottomSheetVisible,
@@ -52,12 +77,44 @@ const AppNavigation: FC = () => {
     setCtlBookeMarked,
   } = UseAppContext();
 
-  const {appHeader, textColor, iconColor, shitBgColor, indicatorBgColor} = useThemeColors();
+  const {
+    appHeader,
+    appBackground,
+    textColor,
+    iconColor,
+    shitBgColor,
+    indicatorBgColor,
+    borderColor,
+    plusButtonBg,
+    isDark,
+  } = useThemeColors();
+
+  // Tells the navigator the app's colours, so the gap between two screens
+  // during a transition is the theme's background and not a white flash.
+  const navigationTheme = useMemo(
+    () => ({
+      dark: isDark,
+      colors: {
+        primary: plusButtonBg,
+        background: appBackground,
+        card: appHeader,
+        text: textColor,
+        border: borderColor,
+        notification: plusButtonBg,
+      },
+    }),
+    [isDark, plusButtonBg, appBackground, appHeader, textColor, borderColor],
+  );
 
   return (
     <>
       <GestureHandlerRootView>
-        <NavigationContainer>
+        <StatusBar
+          translucent={true}
+          barStyle={isDark ? 'light-content' : 'dark-content'}
+          backgroundColor={'transparent'}
+        />
+        <NavigationContainer theme={navigationTheme}>
           <Stack.Navigator>
             <Stack.Screen
               name="Homes"
@@ -107,7 +164,7 @@ const AppNavigation: FC = () => {
                       color: textColor,
                       marginTop: 5,
                     }}>
-                    {bookChapter.data[0].bnBookName}
+                    {bookChapter?.data?.[0]?.bnBookName}
                   </Text>
                 ),
                 headerTintColor: iconColor,
@@ -119,18 +176,23 @@ const AppNavigation: FC = () => {
                 // headerShadowVisible: false,
               }}
               name="chapterList"
-              component={ChapterList}
+              getComponent={() => require('../screens/ChapterList').default}
             />
 
             <Stack.Screen
               options={({route}: any) => ({
                 headerTitle: () => (
+                  // Long chapter names are cut with "…" so they never run
+                  // into the back arrow or the text-size button.
                   <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                     style={{
                       fontFamily: 'kalpurush',
-                      fontSize: 22,
+                      fontSize: 20,
                       color: textColor,
                       marginTop: 5,
+                      maxWidth: Dimensions.get('window').width - 150,
                     }}>
                     {route.params.selector}
                   </Text>
@@ -144,7 +206,7 @@ const AppNavigation: FC = () => {
                 gestureEnabled: false,
               })}
               name="chapter"
-              component={Chapter}
+              getComponent={() => require('../screens/Chapter').default}
             />
 
             <Stack.Screen
@@ -152,12 +214,11 @@ const AppNavigation: FC = () => {
                 headerTitle: () => (
                   <Text
                     style={{
-                      fontFamily: 'MeriendaBold',
-                      fontSize: 20,
+                      fontSize: 19,
+                      fontWeight: '700',
                       color: textColor,
-                      marginTop: -2,
                     }}>
-                    Bookmarked
+                    Bookmarks
                   </Text>
                 ),
                 headerRight: () => (
@@ -183,7 +244,7 @@ const AppNavigation: FC = () => {
                 gestureEnabled: false,
               })}
               name="Bookmarked"
-              component={Bookmarked}
+              getComponent={() => require('../screens/Bookmarked').default}
             />
 
             <Stack.Screen
@@ -191,12 +252,11 @@ const AppNavigation: FC = () => {
                 headerTitle: () => (
                   <Text
                     style={{
-                      fontFamily: 'MeriendaBold',
-                      fontSize: 20,
+                      fontSize: 19,
+                      fontWeight: '700',
                       color: textColor,
-                      marginTop: -2,
                     }}>
-                    Bookmarked
+                    Bookmarks
                   </Text>
                 ),
                 headerRight: () => (
@@ -232,7 +292,7 @@ const AppNavigation: FC = () => {
                 gestureEnabled: false,
               })}
               name="MarkedDetalse"
-              component={MarkedDetalse}
+              getComponent={() => require('../screens/MarkedDetalse').default}
             />
 
             <Stack.Screen
@@ -240,12 +300,12 @@ const AppNavigation: FC = () => {
                 headerTitle: () => (
                   <Text
                     style={{
-                      fontFamily: 'MeriendaBold',
-                      fontSize: 19,
+                      fontFamily: 'kalpurush',
+                      fontSize: 22,
                       color: textColor,
-                      marginTop: -2,
+                      marginTop: 5,
                     }}>
-                    Books Writer
+                    লেখক পরিচিতি
                   </Text>
                 ),
                 headerTitleAlign: 'center',
@@ -255,7 +315,7 @@ const AppNavigation: FC = () => {
                 },
               }}
               name="bookswriter"
-              component={BooksWriter}
+              getComponent={() => require('../screens/BooksWriter').default}
             />
 
             <Stack.Screen
@@ -263,12 +323,35 @@ const AppNavigation: FC = () => {
                 headerTitle: () => (
                   <Text
                     style={{
-                      fontFamily: 'MeriendaBold',
-                      fontSize: 19,
+                      fontFamily: 'kalpurush',
+                      fontSize: 22,
                       color: textColor,
-                      marginTop: -2,
+                      marginTop: 5,
                     }}>
-                    About App
+                    পড়ার ইতিহাস
+                  </Text>
+                ),
+                headerTitleAlign: 'center',
+                headerTintColor: iconColor,
+                headerStyle: {
+                  backgroundColor: appHeader,
+                },
+              }}
+              name="history"
+              getComponent={() => require('../screens/History').default}
+            />
+
+            <Stack.Screen
+              options={{
+                headerTitle: () => (
+                  <Text
+                    style={{
+                      fontFamily: 'kalpurush',
+                      fontSize: 22,
+                      color: textColor,
+                      marginTop: 5,
+                    }}>
+                    অ্যাপ নির্দেশিকা
                   </Text>
                 ),
                 headerTitleAlign: 'center',
@@ -278,7 +361,7 @@ const AppNavigation: FC = () => {
                 },
               }}
               name="aboutapp"
-              component={AboutApp}
+              getComponent={() => require('../screens/AboutApp').default}
             />
 
             <Stack.Screen
@@ -286,12 +369,11 @@ const AppNavigation: FC = () => {
                 headerTitle: () => (
                   <Text
                     style={{
-                      fontFamily: 'MeriendaBold',
-                      fontSize: 18,
-                      color: '#0a1930',
-                      marginTop: -2,
+                      fontSize: 19,
+                      fontWeight: '700',
+                      color: textColor,
                     }}>
-                    Turn your Ideas into Apps!
+                    Developer Profile
                   </Text>
                 ),
                 headerTitleAlign: 'center',
@@ -301,14 +383,16 @@ const AppNavigation: FC = () => {
                 },
               }}
               name="needanapp"
-              component={NeedAnApp}
+              getComponent={() => require('../screens/NeedAnApp').default}
             />
           </Stack.Navigator>
 
           {isBottomSheetVisible && (
             <BottomSheet
               // ref={bottomSheetRef}
-              snapPoints={['87%']}
+              // Opens to just under the header, on every screen size.
+              snapPoints={['100%']}
+              topInset={HEADER_BOTTOM}
               enablePanDownToClose={true}
               // initialSnapIndex={0}
               handleIndicatorStyle={{

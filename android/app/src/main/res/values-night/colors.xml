@@ -1,0 +1,4 @@
+<resources>
+    <!-- Launch background: the app's dark background. -->
+    <color name="splash_background">#2A2A2A</color>
+</resources>

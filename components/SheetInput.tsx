@@ -17,7 +17,7 @@ const SheetInput:  React.FC<any> = ({ onData, onTaskUpdate }) => {
   // console.log(onData.titles)
   const {getDBConnection, createTodo, setIsBottomSheetVisible, updateTodo} =
   UseAppContext();
-  const {appBackground,  submitButtonColor, textColor,  submitButtonTetx, TextInputBorderColor} = useThemeColors()
+  const {textColor, subTextColor, softFill, borderColor, plusButtonBg, plusButtonFg} = useThemeColors()
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
@@ -66,26 +66,36 @@ const SheetInput:  React.FC<any> = ({ onData, onTaskUpdate }) => {
 
   return (
     <View>
-      <Text style={[styles.headerText, {color: textColor}]}>sherlock's bookmarked</Text>
+      <Text style={[styles.headerText, {color: textColor}]}>{onData ? 'Edit bookmark' : 'New bookmark'}</Text>
+      <Text style={[styles.label, {color: subTextColor}]}>Title (optional)</Text>
       <TextInput
-        style={{...styles.postTitle, borderColor: TextInputBorderColor, color: textColor}}
-        placeholder="Bookmarked title"
+        style={[styles.postTitle, {backgroundColor: softFill, borderColor, color: textColor}]}
+        placeholder="e.g. Holmes on deduction"
         onChangeText={e => setTitle(e)}
         value={title}
-        placeholderTextColor="gray"
+        placeholderTextColor={subTextColor}
       />
+      <Text style={[styles.label, {color: subTextColor}]}>Bookmark</Text>
       <TextInput
-        style={[styles.postDesc, {height: postDescHeight, borderColor: TextInputBorderColor, color: textColor}]}
+        style={[styles.postDesc, {height: postDescHeight, backgroundColor: softFill, borderColor, color: textColor}]}
         multiline
-        placeholder="Write your bookmark here"
+        placeholder="Paste the copied line or write a note"
         textAlignVertical="top"
         value={description}
         onContentSizeChange={handleTextChange}
         onChangeText={e => setDescription(e)}
-        placeholderTextColor="gray"
+        placeholderTextColor={subTextColor}
       />
-      <TouchableOpacity onPress={onData? handleUpdateTask: handleAddTask} style={{...styles.submitButton, backgroundColor:  submitButtonColor}}>
-        <Text style={{...styles.submitButtonText, color: submitButtonTetx }}>{onData?'update':'Submit'} </Text>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        disabled={description.trim() === ''}
+        onPress={onData ? handleUpdateTask : handleAddTask}
+        style={[
+          styles.submitButton,
+          {backgroundColor: plusButtonBg},
+          description.trim() === '' && styles.submitButtonDisabled,
+        ]}>
+        <Text style={[styles.submitButtonText, {color: plusButtonFg}]}>{onData ? 'Save changes' : 'Save bookmark'}</Text>
       </TouchableOpacity>
     </View>
   ); 
@@ -97,44 +107,49 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: 'MeriendaBold',
     fontSize: 20,
-    marginLeft: 12,
-    marginBottom: 10,
-    color: '#0a1930',
+    marginHorizontal: 16,
+    marginBottom: 6,
+  },
+  label: {
+    fontSize: 13,
+    letterSpacing: 0.3,
+    marginHorizontal: 18,
+    marginTop: 14,
+    marginBottom: 6,
   },
   postTitle: {
-    marginTop: 8,
-    borderRadius: 10,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
     fontSize: 17,
-    lineHeight: 20,
-    padding: 8,
-    borderColor: '#475468',
-    borderWidth: 1.5,
-    marginHorizontal: 10,
-    color: '#0a1930',
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginHorizontal: 14,
   },
   postDesc: {
-    borderColor: '#475468',
-    borderWidth: 1.5,
-    marginHorizontal: 10,
-    borderRadius: 10,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
     fontSize: 17,
-    padding: 8,
-    marginTop: 20,
-    color: '#0a1930',
+    lineHeight: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginHorizontal: 14,
   },
   submitButton: {
-    backgroundColor: '#475468',
-    borderRadius: 10,
-    padding: 10,
-    paddingTop: 5,
-    marginHorizontal: 10,
+    height: 52,
+    borderRadius: 26,
+    marginHorizontal: 14,
     alignItems: 'center',
-    marginTop: 20,
+    justifyContent: 'center',
+    marginTop: 22,
     marginBottom: 50,
   },
+  submitButtonDisabled: {
+    opacity: 0.4,
+  },
   submitButtonText: {
-    color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'MeriendaBold',
+    // MeriendaBold sits low in its line box; lift it to the visual centre.
+    marginTop: -4,
   },
 });

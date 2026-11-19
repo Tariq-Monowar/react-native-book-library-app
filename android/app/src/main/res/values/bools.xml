@@ -1,0 +1,4 @@
+<resources>
+    <!-- Dark status-bar icons on the light launch background. -->
+    <bool name="splash_light_status_bar">true</bool>
+</resources>

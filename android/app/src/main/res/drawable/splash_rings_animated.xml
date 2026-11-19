@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rings, spreading out from the icon over and over while the app
+     loads. An animated vector is drawn by Android's render thread, so it
+     keeps moving smoothly even while the app's main thread is busy starting
+     up (which is what made the opening pause on slower phones). -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_rings">
+    <target android:name="ring1" android:animation="@animator/splash_ring1_grow" />
+    <target android:name="ring1_path" android:animation="@animator/splash_ring1_fade" />
+    <target android:name="ring2" android:animation="@animator/splash_ring2_grow" />
+    <target android:name="ring2_path" android:animation="@animator/splash_ring2_fade" />
+</animated-vector>

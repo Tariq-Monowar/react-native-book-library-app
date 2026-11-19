@@ -1,0 +1,4 @@
+<resources>
+    <!-- Rings of the opening animation (light theme). -->
+    <color name="splash_accent">#263147</color>
+</resources>

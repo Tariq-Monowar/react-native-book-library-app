@@ -24,7 +24,6 @@ const MarkedDetalse = ({route}: any) => {
   const {ctlBookeMarked, setCtlBookeMarked,  deleteTodo, getDBConnection} =
     UseAppContext();
   const {id, title, description} = route.params.data;
-  console.log(id, title, description)
 
   const [titles, setTitle] = useState(title);
   const [descriptions, setDescription] = useState(description);
@@ -64,7 +63,6 @@ const MarkedDetalse = ({route}: any) => {
       setIsBottomSheetVisible(true);
     }
     if (ctlBookeMarked === 2) {
-      console.log('delete');
       handleDelete();
     }
     setCtlBookeMarked(0);
@@ -95,6 +93,9 @@ const MarkedDetalse = ({route}: any) => {
 
       {isBottomSheetVisible && (
         <BottomSheet
+          // This sheet lives inside the screen, which already starts under
+          // the header, so 100% of it reaches exactly to the header's edge
+          // on every screen size.
           snapPoints={['100%']}
           enablePanDownToClose={true}
           onClose={() => {

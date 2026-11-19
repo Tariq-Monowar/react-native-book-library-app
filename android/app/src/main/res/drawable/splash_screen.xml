@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Drawn by the phone the instant the app is tapped, before any JavaScript
+     runs: the app's background (light or dark) with the app icon in the
+     centre. This is exactly the first frame of the animated splash in
+     components/SplashOverlay.tsx (same colour, same icon, same size and
+     place), so the animation simply carries on from it. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+    <item
+        android:width="112dp"
+        android:height="112dp"
+        android:gravity="center"
+        android:drawable="@drawable/splash_logo" />
+</layer-list>

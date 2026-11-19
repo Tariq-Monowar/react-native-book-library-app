@@ -21,6 +21,8 @@ export interface Task {
   description: string;
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface AppContextType {
   data: string;
   recevedBookName: Book | null;
@@ -50,5 +52,8 @@ export interface AppContextType {
   setOverTheme: (value: string) => void;
   isDarkMode: boolean;
   setIsDarkMode: Dispatch<SetStateAction<boolean>>;
-  toggleTheme: () => void;
+  // Returns false when a change is already running and the call was ignored.
+  toggleTheme: () => boolean;
+  // 'light', 'dark' or 'system' (follow the phone). False when ignored.
+  setThemeMode: (mode: ThemeMode) => boolean;
 }

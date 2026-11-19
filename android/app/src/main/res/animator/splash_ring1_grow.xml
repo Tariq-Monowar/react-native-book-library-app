@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:propertyName="scaleX"
+        android:valueFrom="1"
+        android:valueTo="2.1"
+        android:duration="1200"
+        android:startOffset="0"
+        android:repeatCount="infinite"
+        android:interpolator="@android:interpolator/decelerate_cubic" />
+    <objectAnimator
+        android:propertyName="scaleY"
+        android:valueFrom="1"
+        android:valueTo="2.1"
+        android:duration="1200"
+        android:startOffset="0"
+        android:repeatCount="infinite"
+        android:interpolator="@android:interpolator/decelerate_cubic" />
+</set>

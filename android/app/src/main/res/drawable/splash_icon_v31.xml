@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ launch icon. The system draws this larger than its nominal
+     240dp and masks it to a circle; this inset was measured so the app icon
+     comes out at 112dp, the same size and place as in the animated splash,
+     and nothing jumps when the animation takes over. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_logo"
+    android:inset="31.2%" />

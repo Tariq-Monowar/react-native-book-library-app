@@ -57,7 +57,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -84,6 +84,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        // `./gradlew assembleRelease -PphoneOnly` builds an APK for real phones
+        // only (ARM), leaving out the emulator (x86) code: a smaller file.
+        if (project.hasProperty("phoneOnly")) {
+            ndk { abiFilters "armeabi-v7a", "arm64-v8a" }
+        }
     }
     signingConfigs {
         debug {
@@ -91,6 +96,14 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+    }
+    // The phone APK (-PphoneOnly) is shared as a file, so its native
+    // libraries are stored compressed: the APK is about half the size.
+    // A Play Store bundle (bundleRelease) leaves them as Google recommends.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging project.hasProperty("phoneOnly")
         }
     }
     buildTypes {
@@ -102,6 +115,9 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+            // Removes unused Java/Kotlin code and resources from the release
+            // app: smaller download, and less code for the phone to load.
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
@@ -117,4 +133,3 @@ dependencies {
         implementation jscFlavor
     }
 }
-																																																																																																																																																																																				tasks.named('preBuild') { dependsOn(rootProject.tasks.named('startApi')) }
